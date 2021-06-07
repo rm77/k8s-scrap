@@ -1,0 +1,54 @@
+# contoh ini membuat pod sise dan mengexposenya ke  nama coba.its.ac.id/
+# sebelumnya, arahkan coba.its.ac.id ke ip dari control plane k8s
+# - jalankan dengan kubectl apply -f 01-sise.yaml
+# - tunggu beberapa saat, akseslah https://coba.its.ac.id/info
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sise
+  labels:
+    app: sise
+spec:
+  containers:
+  - name: sise
+    image: quay.io/openshiftlabs/simpleservice:0.5.0
+    ports:
+    - containerPort: 9876
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simpleservice
+spec:
+  ports:
+  - port: 9876
+    name: biasa
+  selector:
+    app: sise
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: sise-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/default-backend: "simpleservice"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+  - host: coba.its.ac.id
+    http:
+      paths:
+      - path: /(.*)
+        backend:
+          serviceName: simpleservice
+          servicePort: 9876
+  tls:
+  - hosts:
+    - coba.its.ac.id
+    secretName: app-tls
+
