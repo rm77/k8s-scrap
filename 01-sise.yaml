@@ -1,6 +1,8 @@
 # contoh ini membuat pod sise dan mengexposenya ke  nama coba.its.ac.id/
 # sebelumnya, arahkan coba.its.ac.id ke ip dari control plane k8s
-# - jalankan dengan kubectl apply -f 01-sise.yaml
+# agar tidak berbentrokan , gunakan namespace
+# - kubectl create ns my-namespace
+# - jalankan dengan kubectl -n my-namespace apply -f 01-sise.yaml
 # - tunggu beberapa saat, akseslah https://coba.its.ac.id/info
 
 apiVersion: v1
