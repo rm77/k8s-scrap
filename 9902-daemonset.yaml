@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: my-alpine
+  namespace: coba-alpine
+spec:
+  selector:
+    matchLabels:
+      app: coba-alpine
+  template:
+    metadata:
+      labels:
+        app: coba-alpine
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: jenis
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            jenis: worker
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        env:
+        - name: "COBA"
+          value: "0.2"
+
